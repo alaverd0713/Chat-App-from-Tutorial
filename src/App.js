@@ -32,10 +32,6 @@ function App() {
       <header className="App-header"></header>
 
       <section>{user ? <ChatRoom /> : <SignIn />}</section>
-      <section>
-        {/* <ChatRoom /> */}
-        {/* <SignIn/> */}
-      </section>
     </div>
   );
 }
@@ -55,10 +51,12 @@ function SignOut() {
 }
 
 function ChatRoom() {
+
+  const dummy = useRef();
+
   const messagesRef = firestore.collection("messages");
   const query = messagesRef.orderBy("createdAt").limit(25);
   const [messages] = useCollectionData(query, { idField: "id" });
-  // console.log(messages);
   const [formValue, setFormValue] = useState("");
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -71,13 +69,18 @@ function ChatRoom() {
       photoURL,
     });
     setFormValue("");
+    dummy.current.scrollIntoView({behavior: "smooth"});
   };
   return (
     <>
-      <div>
+      <main>
         {messages &&
           messages.map((msg) => <ChatMessage key={msg.id} message={msg} />)}
-      </div>
+
+        <span ref={dummy}></span>
+
+        </main>
+      
       <form onSubmit={sendMessage}>
         <input
           value={formValue}
@@ -95,10 +98,12 @@ function ChatMessage(props) {
   const messageClass = uid === auth.currentUser.uid ? "sent" : "recieved";
 
   return (
-    <div className={"message ${messageClass}"}>
+    <>
+    <div className={`message ${messageClass}`}>
       <img src={photoURL} />
       <p>{text}</p>
     </div>
+    </>
   );
 }
 
