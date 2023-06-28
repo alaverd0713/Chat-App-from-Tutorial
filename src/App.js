@@ -1,3 +1,5 @@
+"use strict";
+
 import React, { useRef, useState } from "react";
 import "./App.css";
 
@@ -21,17 +23,18 @@ firebase.initializeApp({
 
 const auth = firebase.auth();
 const firestore = firebase.firestore();
-
-//const [user] = useAuthState(auth);
+const analytics = firebase.analytics();
 
 function App() {
+  const [user] = useAuthState(auth);
   return (
     <div className="App">
       <header className="App-header"></header>
 
-      {/* <section>{user ? <ChatRoom /> : <SignIn />}</section> */}
+      <section>{user ? <ChatRoom /> : <SignIn />}</section>
       <section>
-        <ChatRoom />
+        {/* <ChatRoom /> */}
+        {/* <SignIn/> */}
       </section>
     </div>
   );
@@ -55,6 +58,7 @@ function ChatRoom() {
   const messagesRef = firestore.collection("messages");
   const query = messagesRef.orderBy("createdAt").limit(25);
   const [messages] = useCollectionData(query, { idField: "id" });
+  // console.log(messages);
   const [formValue, setFormValue] = useState("");
   const sendMessage = async (e) => {
     e.preventDefault();
@@ -88,7 +92,7 @@ function ChatRoom() {
 
 function ChatMessage(props) {
   const { text, uid, photoURL } = props.message;
-  //const messageClass = uid === auth.currentUser.uid ? "sent" : "recieved";
+  const messageClass = uid === auth.currentUser.uid ? "sent" : "recieved";
 
   return (
     <div className={"message ${messageClass}"}>
